@@ -1,0 +1,91 @@
+---
+title: "Konfiguration: Alle Einstellungen im Formular und JSON"
+sidebarTitle: "Konfiguration"
+description: "Barcode-Aussehen, Zielbereich, Ausgabe und Themes anpassen. Kompatibel zur config.json von Web-App und CLI, mit gespeicherten Browser-Einstellungen."
+---
+
+Alle Einstellungen befinden sich in Karte **„3 Konfiguration"**. Sie entsprechen 1:1 der `config.json`. Import und Export halten Browser-Tool und PowerShell-Werkzeug synchron.
+
+## Barcode-Aussehen
+
+| Feld | Bedeutung | Typischer Wert |
+| --- | --- | --- |
+| Balkenhöhe (px) | Höhe der Barcode-Balken | 180 |
+| Strichbreite (px) | Dicke eines einzelnen Moduls | 4 |
+| Rand (px) | Innenabstand rund um Barcode + Text | 20 |
+| Schriftgröße (px) | Klartext unter dem Barcode | 54 |
+| Textabstand (px) | Abstand Balken ↔ Klartext | 6 |
+| Farbe | Balken + Klartext (Hex) | `#000000` |
+| Schriftart | Klartext-Schriftfamilie | Consolas/monospace |
+
+## Zielbereich (Platzierung auf der Vorlage)
+
+| Feld | Bedeutung |
+| --- | --- |
+| Links / Oben (px) | Obere linke Ecke des Zielbereichs auf der Vorlage |
+| Breite / Höhe (px) | Größe des Zielbereichs, **deaktiviert bei „Zielbereich automatisch"** (füllt dann bis zum Vorlagenrand) |
+| Max. Breite / Höhe (%) | Wie viel Prozent des Zielbereichs der Barcode maximal einnehmen darf; der Barcode wird nur **verkleinert**, nie vergrößert |
+| Verschiebung X / Y (px) | Feinjustierung nach rechts/unten (auch negativ) |
+
+## Erweiterte Platzierung
+
+Aufklappen „Erweiterte Platzierung" für Max.-Prozente und Verschiebung. Die Felder wirken relativ, passen sich also automatisch an, wenn sich der Zielbereich ändert.
+
+## Ausgabe
+
+| Feld | Bedeutung | Standard |
+| --- | --- | --- |
+| Dateiname-Präfix | Vorangestellter Text, z. B. `lagerplatz_01A01.png` | `lagerplatz_` |
+| DPI (Metadaten) | Auflösung im PNG, wichtig für exaktes Druckformat | 300 |
+| Raster-DPI Barcode | Effektive Auflösung der Barcode-Rasterung. CLI und Browser nutzen denselben Wert, damit beide identische Schilder erzeugen | 600 |
+
+## config.json laden, exportieren, zurücksetzen
+
+- **Exportieren**: Speichert die aktuellen Formularwerte als `config.json`, kompatibel zum `lager`-CLI (`pnpm cli generate`).
+- **Laden**: Spielt eine `config.json` ein (z. B. eine pro Vorlage, wie `config-MV-C.json`).
+- **Zurücksetzen**: Formular auf die Standardwerte (`DEFAULT_CONFIG` der Bibliothek) zurücksetzen.
+
+<Info>
+  **Zielbereich automatisch bleibt erhalten**: Der Zustand der Checkbox „Zielbereich automatisch" wird lokal gespeichert und überlebt einen Neuladen der Seite, genau wie das Overlay („Zielbereich einzeichnen") und die zuletzt gewählte Vorlage.
+</Info>
+
+## Was will ich ändern?
+
+| Wunsch | Einstellung |
+| --- | --- |
+| Größere Balken | Balkenhöhe ↑ |
+| Größerer Klartext | Schriftgröße ↑ |
+| Barcode kleiner relativ zum Zielbereich | Max. Breite/Höhe (%) ↓ |
+| Barcode weiter nach unten/rechts | Verschiebung Y / X ↑ |
+| Barcode nur in einer Ecke | „Zielbereich automatisch" abwählen, Breite/Höhe setzen |
+| Andere Dateinamen | Dateiname-Präfix ändern |
+| Anderes Druckformat | DPI ändern |
+
+Nach jeder Änderung: [Vorschau und Erzeugung](/vorschau-und-erzeugung) prüfen, bevor der vollständige Bestand läuft.
+
+## Themes (Aussehen)
+
+Im Protokoll-Panel (**„7 Protokoll & Einstellungen"**) wählt das Dropdown **„Theme (Catppuccin)"** das Aussehen:
+
+| Theme | Eindruck |
+| --- | --- |
+| 🌸 Mocha | dunkel (Standard) |
+| ☕ Macchiato | dunkel, etwas heller |
+| 🌿 Frappé | dunkel, sanfter |
+| 🌻 Latte | hell |
+
+Die Wahl wird **im Browser gespeichert** und beim nächsten Start wieder hergestellt. Ohne eigene Wahl richtet sich das Tool nach der **Systemeinstellung** (dunkler Modus → Mocha, heller Modus → Latte).
+
+## Gespeicherte Einstellungen
+
+Das Tool merkt sich im Browser (localStorage) und stellt sie beim nächsten Start automatisch her:
+
+- **Theme** — letzte manuelle Wahl
+- **„Zielbereich einzeichnen"** — Overlay-Modus der Vorschau
+- **Zuletzt gewählte Vorlage** — wird aus der Vorlagen-Galerie erneut geladen (eigene Dropzone-Dateien können nicht gemerkt werden)
+
+Über den Browser-Datenschutz (Cookies/Site-Daten löschen) werden auch diese Einstellungen entfernt. Das Tool funktioniert danach trotzdem normal, nur ohne Merkung.
+
+## Konfiguration in der CLI
+
+Die CLI (`lager generate`, siehe [CLI](/cli)) nutzt dieselbe `config.json`. Per `--config` kann ein abweichender Pfad übergeben werden. Ohne Angabe gilt die Standard-Konfiguration des Projekts, identisch zur Web-App.

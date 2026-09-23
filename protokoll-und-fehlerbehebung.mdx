@@ -1,0 +1,69 @@
+---
+title: "Protokoll und Fehlerbehebung: Meldungen verstehen"
+sidebarTitle: "Fehlerbehebung"
+description: "Farbcodierung des Protokolls lesen, typische Fehlermeldungen mit Ursachen und Lösungen, Checkliste für den sicheren Großlauf."
+---
+
+Jede Aktion des Werkzeugs wird protokolliert. Diese Seite zeigt, wie du Meldungen einordnest, welche Fehler häufig auftreten und wie du sie behebst. Am Ende steht die Checkliste für den Großlauf.
+
+## Protokoll lesen (Karte „7 Protokoll")
+
+Jede Aktion wird mit Zeitstempel und Farbe protokolliert:
+
+| Farbe | Bedeutung | Beispiel |
+| --- | --- | --- |
+| Grau | Information | „Werkzeug bereit…", „Erstelle ZIP-Archiv…" |
+| Grün | Erfolg | „Erstellt: lagerplatz_01A01.png" |
+| Gelb | Warnung (Lauf läuft weiter) | „Zielbereich … reicht über die Vorlagengröße … hinaus" |
+| Rot | Fehler | „Doppelter Eintrag …", „Vorschau fehlgeschlagen: …" |
+
+**„Protokoll speichern"** lädt das gesamte Protokoll als `generator-protokoll.txt` herunter. Praktisch zur Dokumentation eines Laufs oder zum Weitergeben bei Fragen.
+
+## Typische Probleme und Lösungen
+
+| Meldung / Symptom | Ursache | Lösung |
+| --- | --- | --- |
+| „Ungültige Lagerplatz-Codes gefunden — Unterkategorie N, Position M: …" | Ein Code in dieser Unterkategorie ist ungültig (Position zählt innerhalb der Kategorie) | Im Protokoll lokalisieren, Code korrigieren, Lauf wiederholen |
+| „Doppelte Lagerplätze über Unterkategorien hinweg: "01A02" in Unterkategorie 1 und Unterkategorie 2" | Dieselbe Platznummer steht in mehreren Unterkategorien | Duplikat entfernen. Bewusste Sperre gegen doppelte Schilder; die Meldung nennt alle beteiligten Unterkategorien |
+| „Zielbereich … reicht über die Vorlagengröße … hinaus" (gelb) | Zielbereich passt nicht zur geladenen Vorlage (z. B. andere Vorlage als beim letzten Mal) | [Konfiguration](/konfiguration): „Zielbereich automatisch" anwählen oder Links/Oben/Breite/Höhe anpassen |
+| „Bitte eine PNG-Bilddatei als Vorlage auswählen." | Falscher Dateityp in die Dropzone gezogen | PNG-Vorlage verwenden |
+| „Vorlage konnte nicht geladen werden." | Beschädigtes/exotisches PNG | Datei neu exportieren oder über `konvertieren.mjs` normalisieren (Haupt-README) |
+| Vorschau bleibt leer / Barcode „fehlt" | Zielbereich liegt außerhalb der (Test-)Vorlage | Bei kleinen Testbildern Links/Oben auf 0 setzen oder „Zielbereich automatisch" wählen |
+| „Falsches Passwort. Bitte erneut versuchen." | Tippfehler oder Passwort wurde geändert | Erneut eingeben; nach Passwort-Wechsel Tab schließen und neu öffnen ([Login und Passwortschutz](/login-und-passwortschutz)) |
+| Barcode scannt schlecht/nicht | Ruhezonen überlagert, zu klein gedruckt, Kontrast zu gering | In tatsächlicher Größe drucken; Vorlagenbereich hinter dem Barcode frei halten; Testschilder mit echtem Scanner prüfen |
+| Schilder fehlen im ZIP | Fehler bei einzelnen Einträgen (rot im Protokoll) | Protokoll prüfen, Einträge korrigieren, Lauf wiederholen |
+| „Zeichen an Position N ist kein ASCII" | Code enthält Umlaute oder Sonderzeichen, die die Barcode-Bibliothek nicht ins Balkenmuster übernimmt (nur Klartext) | ASCII-Zeichen verwenden (A–Z, 0–9, Bindestrich etc.) |
+| „Der Code passt nicht in die gewählte Symbologie (zu lang)" | Barcode zu lang für sauberes Schild | Code kürzen oder Barcode-Größe in der [Konfiguration](/konfiguration) anpassen |
+| „Die Prüfziffer stimmt nicht" | Letzte Ziffer war eine manuell angehängte Prüfziffer | Letzte Ziffer weglassen. Sie wird automatisch berechnet |
+
+## Vor dem Großlauf (Checkliste)
+
+<Steps>
+  <Step title="Testschilder erzeugen">
+    2–3 Testschilder erzeugen, darunter kurze **und** lange Platznummern.
+  </Step>
+  <Step title="Vergleichen">
+    Dateiname, sichtbarer Klartext und Scanner-Ergebnis vergleichen.
+  </Step>
+  <Step title="Tatsächlich groß drucken">
+    Nie „An Seite anpassen".
+  </Step>
+  <Step title="Real prüfen">
+    Mit den real verwendeten Scannern, unter realer Beleuchtung und auf dem echten Material prüfen.
+  </Step>
+  <Step title="Großlauf starten">
+    Erst dann den vollständigen Bestand erzeugen.
+  </Step>
+</Steps>
+
+## Weiterführend
+
+<CardGroup cols={2}>
+  <Card title="FAQ" icon="circle-question" href="/faq">
+    Häufige Fragen gebündelt.
+  </Card>
+
+  <Card title="CLI" icon="terminal" href="/cli">
+    Schilder per Skript erzeugen.
+  </Card>
+</CardGroup>

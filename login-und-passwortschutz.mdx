@@ -1,0 +1,69 @@
+---
+title: "Login und Passwortschutz: Zugang zur Web-App"
+sidebarTitle: "Login und Passwort"
+description: "Entsperren des Werkzeugs, Sitzungsverhalten pro Browser-Tab und Anleitung für Admins zum Ändern des Passworts auf GitHub Pages."
+---
+
+Das Werkzeug ist clientseitig verschlüsselt: Ohne korrektes Passwort existiert die Anwendungslogik gar nicht im Klartext auf der Seite. Diese Seite erklärt, wie du dich entsperrst, wie sich die Sitzung verhält und wie Admins das Passwort setzen.
+
+## Entsperren
+
+<Steps>
+  <Step title="Seite öffnen">
+    Der Begrüßungsbildschirm erscheint.
+  </Step>
+  <Step title="Login-Fenster">
+    Das Fenster **„Zugang bestätigen"** liegt darüber.
+  </Step>
+  <Step title="Passwort eingeben">
+    **Entsperren** klicken.
+  </Step>
+</Steps>
+
+- **Falsches Passwort:** rote Meldung „Falsches Passwort. Bitte erneut versuchen.", das Feld leert sich. Einfach erneut versuchen.
+- **Richtiges Passwort:** das Fenster schließt sich und das Werkzeug ist einsatzbereit ([Schnellstart](/quickstart)).
+
+## Sitzung: nicht bei jedem Reload tippen
+
+Die Entsperrung gilt **pro Browser-Tab bis zum Schließen**:
+
+- Seite neu laden (F5) → sofort wieder im Werkzeug, ohne Passwort.
+- Tab schließen und neu öffnen → Passwort wird erneut verlangt.
+- In einem neuen Tab oder Privatfenster → Passwort wird erneut verlangt.
+
+Das ist bewusst so: Der Zugriff ist an die geöffnete Sitzung gebunden.
+
+## Für Admins: Passwort festlegen oder ändern
+
+Das Passwort steht **nirgends im Code**. Es wird beim Build angegeben und verschlüsselt damit die gesamte Anwendungslogik (AES-256-GCM, PBKDF2-Schlüsselableitung).
+
+### GitHub Pages (Live-Seite)
+
+<Steps>
+  <Step title="Secret öffnen">
+    Repository → _Settings → Environments → github-pages_ → _Environment secrets_ → `APP_PASSWORD`.
+  </Step>
+  <Step title="Wert setzen">
+    Das ist das Passwort der Live-Seite.
+  </Step>
+  <Step title="Deploy auslösen">
+    Beim nächsten automatischen Deploy (Push auf `master`) oder manuell über _Actions → Update GitHub Pages → Run workflow_ wird die Seite mit dem neuen Passwort gebaut.
+  </Step>
+  <Step title="Neuen Zugang testen">
+    Danach gilt: **neues** Passwort im Browser (ggf. Tab schließen, damit keine alte Sitzung dazwischenfunkt).
+  </Step>
+</Steps>
+
+### Lokal (geschützter Build)
+
+```powershell
+node build.mjs --password "DeinPasswort"
+```
+
+<Warning>
+  Ohne Passwort-Parameter entsteht ein unverschlüsselter Entwicklungs-Build (kein Login). Nur für die Entwicklung verwenden.
+</Warning>
+
+## Grenze des Schutzes
+
+Der Schutz verhindert die Nutzung ohne Passwort zuverlässig. Nach dem Entsperren liegt die Logik im Browserspeicher des jeweiligen Nutzers: eine Türschloss-Lösung, kein Tresor.

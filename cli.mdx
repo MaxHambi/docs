@@ -1,0 +1,91 @@
+---
+title: "CLI: Lagerplatz-Schilder per Kommandozeile erzeugen"
+sidebarTitle: "CLI"
+description: "Kommandos lager generate, validate und list mit Optionen, Beispiel-Aufrufen und Tipps für Skripte. Nutzt dieselbe Config wie die Web-App."
+---
+
+Die Kommandozeilen-Erzeugung ist für alle gedacht, die Schilder in Skripte oder Automatisierung einbinden wollen, z. B. nächtliche Läufe über eine Eintragsliste oder Anbindung an ein Warenwirtschaftssystem. Sie nutzt dieselbe Rendering-Engine wie die Web-App und erzeugt pixelgleiche Schilder.
+
+## Voraussetzungen
+
+- **Node.js 24 oder neuer** ([nodejs.org](https://nodejs.org/))
+- Ein Klon dieses Repositories (die CLI ist Teil des Monorepos)
+
+Details zum Einrichten: [Lokales Setup](/lokales-setup).
+
+## Installation
+
+```bash
+git clone https://github.com/MaxHambi/Lager-etiket.git
+cd Lager-etiket
+npm install -g pnpm     # falls pnpm fehlt
+pnpm install
+pnpm build
+```
+
+Danach ist die CLI unter `packages/cli` gebaut. Sie heißt **`lager`**.
+
+## `lager generate`: Schilder erzeugen
+
+<Tabs>
+  <Tab title="Einzeln">
+    ```bash
+    node packages/cli/dist/cli.mjs generate 01A01 --out output
+    ```
+  </Tab>
+  <Tab title="Bereich">
+    ```bash
+    node packages/cli/dist/cli.mjs generate --start 01A01 --end 01A12 --out output
+    ```
+
+    Gleiche Präfix-Länge bei `--start` und `--end`.
+  </Tab>
+  <Tab title="Liste">
+    ```bash
+    node packages/cli/dist/cli.mjs generate --file liste.txt --out output
+    ```
+
+    Eine Zeile pro Code, `#`-Zeilen werden übersprungen.
+  </Tab>
+</Tabs>
+
+### Optionen
+
+| Option | Pflicht | Beschreibung |
+| --- | --- | --- |
+| `entry` (positionell) | eine Quelle | einzelner Lagerplatz, z. B. `01A01` |
+| `--start` / `--end` | eine Quelle | Bereich, z. B. `01A01` bis `01A12` |
+| `--file` | eine Quelle | Pfad zu einer .txt-Eintragsliste |
+| `--config` | nein | Pfad zur config.json (sonst Standard-Config) |
+| `--template` | nein | Pfad zur Vorlagen-PNG |
+| `--out` | ja | Ausgabedatei oder -ordner (Default: `output`) |
+
+Jede erzeugte Datei wird mit Namen und Größe gemeldet; am Ende steht `Fertig. N von N Schildern in <Ordner>`.
+
+## `lager validate`: Codes prüfen
+
+Prüft Einträge auf Code-128-Kodierbarkeit und Duplikate, **ohne** zu rendern. Ideal vor großen Läufen:
+
+```bash
+node packages/cli/dist/cli.mjs validate 01A01
+node packages/cli/dist/cli.mjs validate --file liste.txt
+```
+
+Ausgabe pro Zeile: `OK 01A01` oder `INVALID 01A01 — Zeichen an Position …`. Zusammenfassung am Ende; bei ungültigen Codes ist der Exit-Code 1 (praktisch für Skripte).
+
+## `lager list`: Formate anzeigen
+
+```bash
+node packages/cli/dist/cli.mjs list
+```
+
+Zeigt die unterstützten Symbologien (primär Code 128 im Lager, weitere via etiket) und die aktuelle Konfigurationsquelle.
+
+## Tipps
+
+<Tip>
+  - **Exit-Codes beachten:** 0 = alles gültig, 1 = ungültige Einträge oder Abbruch. Perfekt für `if`-Checks in Batch- oder PowerShell-Skripten.
+  - **Erst prüfen, dann erzeugen:** `validate --file` vor dem großen `generate --file`-Lauf spart Zeit.
+  - Die CLI nutzt dieselbe **Standard-Config** wie die Web-App ([Konfiguration](/konfiguration)); eigene Pfade per `--config`.
+  - Ungültige Zeichen (z. B. Umlaute) werden **vor** dem Rendern abgelehnt. Es entstehen keine halben Schilder.
+</Tip>

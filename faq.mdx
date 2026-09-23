@@ -1,0 +1,87 @@
+---
+title: "FAQ: Häufig gestellte Fragen zum Barcode-Generator"
+sidebarTitle: "FAQ"
+description: "Antworten zu Codes und Einträgen, Vorlagen, Erzeugung und Druck, Passwort und Datenschutz sowie Bedienung der Web-App und CLI."
+---
+
+Diese Seite bündelt die wichtigsten Fragen zur Web-App und zur CLI. Technische Details zu eigenen Vorlagen stehen in [Vorlagen und Einträge](/vorlagen-und-eintraege), Einstellungen in [Konfiguration](/konfiguration).
+
+## Codes und Einträge
+
+<AccordionGroup>
+  <Accordion title="Welche Zeichen darf ein Lagerplatz-Code enthalten?">
+    Druckbare ASCII-Zeichen (Buchstaben, Ziffern, `-`, `.`, `$`, `+`, `%`, Leerzeichen u. a.). **Umlaute (Ä, Ö, Ü, ß) und Emojis werden abgelehnt**: die installierte etiket-Version würde sie zwar als Text drucken, aber nicht in den Barcode kodieren; das Schild wäre beim Scannen falsch. Die Eingabeprüfung fängt das ab, bevor gerendert wird.
+  </Accordion>
+
+  <Accordion title="Wie lang darf ein Code sein?">
+    Maximal 48 Zeichen. Praktisch relevant ist eher die Lesbarkeit: Bei sehr langen Codes skaliert der Barcode automatisch auf den Zielbereich und wird kleiner.
+  </Accordion>
+
+  <Accordion title="Warum bricht die Erzeugung bei doppelten Einträgen ab?">
+    Bewusstes Sicherheitsmerkmal: Zwei Schilder mit demselben Barcode im Umlauf sind ein Lager-Chaos. Die Prüfung läuft über alle Unterkategorien hinweg; die Fehlermeldung nennt den doppelten Code **und alle beteiligten Unterkategorien**. In der CLI (`--file`) werden zusätzlich die Zeilennummern der .txt-Datei angegeben. Details: [Protokoll und Fehlerbehebung](/protokoll-und-fehlerbehebung).
+  </Accordion>
+
+  <Accordion title="Was macht `validate` anders als `generate`?">
+    `validate` (nur CLI) prüft Codes, ohne etwas zu rendern. Schnell und ideal vor großen Läufen. `generate` prüft **und** erzeugt die PNGs.
+  </Accordion>
+</AccordionGroup>
+
+## Vorlagen
+
+<AccordionGroup>
+  <Accordion title="Kann ich eigene Vorlagen verwenden?">
+    Ja. PNG-Datei per Dropzone laden (Klick oder Drag & Drop) oder in der CLI per `--template`. Wichtig: Der Barcode wird im **Zielbereich** platziert, der in der [Konfiguration](/konfiguration) festgelegt wird. Die Vorlage muss zum gewählten Zielbereich passen.
+  </Accordion>
+
+  <Accordion title="Woher weiß ich, wohin der Barcode gedruckt wird?">
+    In der Web-App den **Zielbereich-Overlay** einblenden (Checkbox „Zielbereich anzeigen"): eine gestrichelte Umrandung zeigt links, oben, Breite und Höhe des Bereichs direkt auf der Vorlage.
+  </Accordion>
+
+  <Accordion title="Wie groß dürfen die Vorlagen sein?">
+    Es gibt keine harte Grenze; die mitgelieferten Vorlagen sind 2244×709 px. Für den Druck sollte die Vorlage in natürlicher Größe die gewünschte Schildgröße ergeben.
+  </Accordion>
+</AccordionGroup>
+
+## Erzeugung und Druck
+
+<AccordionGroup>
+  <Accordion title="Warum ist der Barcode in der Vorschau verpixelt, im Druck aber scharf?">
+    Die Vorschau ist eine Bildschirmansicht in geringerer Auflösung. Die erzeugten PNGs werden in voller DPI (Standard 600) gerastert. Der Barcode wird **erst nach** der vektorbasierten Skalierung in Pixel umgewandelt und bleibt damit scharf.
+  </Accordion>
+
+  <Accordion title="Wie drucke ich richtig?">
+    PNG in tatsächlicher Größe drucken (100 %, „Tatsächliche Größe" / „Actual size"), **nicht** „An Seite anpassen". Sonst verändert sich das Verhältnis der Balkenbreiten und Scanner können versagen.
+  </Accordion>
+
+  <Accordion title="Kann ich mehrere Schilder auf einmal erzeugen?">
+    Ja. In der Web-App über **Mehrere Bereiche** mit Unterkategorien (jeweils Start/Ende, optional eigener Ordner in der ZIP), in der CLI über `--start/--end` oder `--file`. Details: [Vorschau und Erzeugung](/vorschau-und-erzeugung) bzw. [CLI](/cli).
+  </Accordion>
+</AccordionGroup>
+
+## Passwort und Datenschutz
+
+<AccordionGroup>
+  <Accordion title="Warum fragt die Live-App ein Passwort?">
+    Das Werkzeug ist intern für Auto-Kabel Rülzheim gedacht; der geschützte Build verschlüsselt die App-Logik, damit nicht jeder Beliebige Schilder im Firmendesign erzeugen kann. Details: [Login und Passwortschutz](/login-und-passwortschutz).
+  </Accordion>
+
+  <Accordion title="Werden Daten nach draußen gesendet?">
+    Nein. Die App läuft komplett offline: Vorlagen, Einträge und Bilder verlassen den Browser nicht. Nach dem Entsperren wird die Sitzung im `sessionStorage` gehalten. Beim Schließen des Tabs ist sie weg.
+  </Accordion>
+</AccordionGroup>
+
+## Bedienung
+
+<AccordionGroup>
+  <Accordion title="Warum ist meine letzte Vorlage beim nächsten Start noch ausgewählt?">
+    Gewollt: Theme, Zielbereich-Overlay und die zuletzt gewählte Vorlage werden im `localStorage` gemerkt. Über die Theme-Auswahl lassen sich vier Farbschemata wählen (drei dunkle, ein helles); ohne gespeicherte Auswahl richtet sich die App nach der Systemeinstellung.
+  </Accordion>
+
+  <Accordion title="Wo sind die Themes?">
+    Im Kopfbereich der Web-App: **Catppuccin Mocha, Macchiato, Frappé** (dunkel) und **Latte** (hell). Die Auswahl wird gespeichert.
+  </Accordion>
+
+  <Accordion title="Gibt es das auch ohne Browser?">
+    Ja, als CLI für Windows, Linux und macOS. Siehe [CLI](/cli).
+  </Accordion>
+</AccordionGroup>

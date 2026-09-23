@@ -1,0 +1,100 @@
+---
+title: "Vorlagen und Einträge: PNG-Design und Lagerplatz-Listen"
+sidebarTitle: "Vorlagen & Einträge"
+description: "PNG-Vorlagen vorbereiten, Vorlagen-Galerie und Config-Bibliothek pflegen, Unterkategorien und .txt-Eintragslisten sauber verwalten."
+---
+
+Die **Vorlage** ist das PNG-Design, auf dem der Barcode zentriert wird. **Einträge** sind die Lagerplatz-Codes, aus denen Schilder entstehen. Diese Seite erklärt, wie du beides pflegst und wie mehrere Bereiche über Unterkategorien organisiert werden.
+
+## Vorlagen-Galerie nutzen
+
+Die **Vorlagen-Galerie** (Karte „1 Vorlage") zeigt alle Vorlagen, die im Ordner `public/templates/` hinterlegt sind: anklicken genügt, kein Datei-Dialog nötig.
+
+**Eigene Vorlagen hinterlegen** (Voraussetzung: Zugriff auf das Repo oder den lokalen Ordner `apps/web/public/templates/`):
+
+<Steps>
+  <Step title="PNG-Datei ablegen">
+    In `apps/web/public/templates/`.
+  </Step>
+  <Step title="In templates.json registrieren">
+    ```json
+    {
+      "templates": [
+        { "file": "MV-AB.png", "label": "MV Abteilung A–B" },
+        { "file": "MV-C.png", "label": "MV Abteilung C" }
+      ]
+    }
+    ```
+  </Step>
+  <Step title="Seite neu laden">
+    Die Karte erscheint in der Galerie.
+  </Step>
+</Steps>
+
+**Eigene Datei ohne Hinterlegung:** Die Dropzone darunter nimmt weiterhin jedes PNG per Klick oder Drag & Drop. Das hebt die Galerie-Auswahl auf.
+
+Die Vorschau unter der Galerie zeigt immer die aktuell gewählte Vorlage mit Name und Pixelgröße.
+
+## PNG-Vorlage vorbereiten
+
+Die Vorlage ist das fertige Etiketten-Design als PNG; der Barcode wird später auf einem freien Bereich davon zentriert.
+
+**Anforderungen an die Vorlage:**
+
+- PNG-Format, weißer oder heller Bereich für den Barcode.
+- Der Bereich hinter dem Barcode muss frei von Linien, Logos oder Mustern sein. Besonders die **Ruhezonen** links und rechts vom Barcode (freier Rand) dürfen nicht überlagert werden, sonst scannt das Schild nicht mehr zuverlässig.
+- Vorlage nicht beschnitten oder mit Transparenz an kritischen Stellen laden; problematische Dateien vorher normalisieren (dazu `konvertieren.mjs` in der Haupt-README).
+
+## Zielbereich festlegen
+
+Der Zielbereich bestimmt, **wo** auf der Vorlage der Barcode landet (Einstellungen in Karte „3 Konfiguration", Details: [Konfiguration](/konfiguration)):
+
+- **Automatisch** (Häkchen gesetzt): Der Bereich füllt alles ab den Koordinaten „Links/Oben" bis zum Vorlagenrand, passt sich an jede Vorlagengröße an.
+- **Manuell**: „Zielbereich automatisch" abwählen und „Breite/Höhe" fest eintragen. Sinnvoll, wenn der Barcode nur in einer bestimmten Ecke stehen soll.
+- **Feinjustierung**: „Verschiebung X/Y" (auch negativ) oder „Max. Breite/Höhe (%)" verkleinern.
+
+Ob die Platzierung stimmt, zeigt die Vorschau mit eingezeichnetem Zielbereich ([Vorschau und Erzeugung](/vorschau-und-erzeugung)).
+
+## Config-Bibliothek: gespeicherte Konfigurationen
+
+Das Dropdown **„Gespeicherte Konfiguration"** (Karte „3 Konfiguration") listet alle Configs aus `apps/web/public/configs/`:
+
+<Steps>
+  <Step title="config.json ablegen">
+    In `apps/web/public/configs/` (z. B. `gross.json` für große Schilder, `klein.json` für Restposten).
+  </Step>
+  <Step title="In configs.json registrieren">
+    ```json
+    {
+      "configs": [
+        { "file": "gross.json", "label": "Große Schilder" },
+        { "file": "klein.json", "label": "Kleine Schilder" }
+      ]
+    }
+    ```
+  </Step>
+  <Step title="Im Dropdown wählen">
+    Das Formular übernimmt alle Werte. Exportieren und Importieren bleibt daneben weiterhin möglich.
+  </Step>
+</Steps>
+
+<Tip>
+  Die eigene Konfiguration exportieren, als JSON ablegen und in die Liste eintragen: so ist sie für alle Kollegen sofort verfügbar.
+</Tip>
+
+## Unterkategorien: Bereiche von Lagerplätzen
+
+Ab Karte „2 Lagerplätze" per **„Mehrere Bereiche"** aktivierbar:
+
+- Jede Unterkategorie besteht aus **Start**, **Ende** und einem **Konfigurations-Dropdown**.
+- Der Bereich wird aufsteigend inklusive expandiert: `01A01` bis `01A03` ergibt `01A01`, `01A02`, `01A03`.
+- Das Ziffern-Suffix muss **gleich lang** sein (führende Nullen: `01A01 → 01A09`, nicht `01A1 → 01A9`).
+- **„+ Unterkategorie"** legt weitere Bereiche an, z. B. eine pro Abteilung oder Regalreihe. Jede kann eine eigene Konfiguration haben (unterschiedliche Vorlagen-Größen pro Abteilung).
+- Leere Unterkategorien (Start und Ende leer) werden übersprungen.
+- **Duplikate über Unterkategorien hinweg** brechen die Erzeugung ab, so entstehen nie zwei Schilder mit demselben Barcode.
+- Maximale Größen: 10 000 Einträge pro Bereich, 10 Unterkategorien.
+
+## Eintragslisten pflegen (.txt)
+
+- UTF-8, eine Zeile pro Platz, `#` am Zeilenanfang = Kommentar.
+- Beim Laden mit genau **einem** Eintrag landet dieser direkt im Einzelfeld; bei mehreren Einträgen den Mehrfach-Modus nutzen (Hinweis erscheint im Protokoll).

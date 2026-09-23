@@ -1,0 +1,116 @@
+---
+title: "Error-Handling: Fehlertaxonomie und Meldungsfluss"
+sidebarTitle: "Error-Handling"
+description: "Zentrale Fehlerarchitektur mit etiket-, App- und Restfehlern, dem describeError-Mapper, Fehlerfluss in Web und CLI sowie Anleitung für neue Fehlerstellen."
+---
+
+Diese Seite beschreibt die zentrale Fehlerarchitektur des Projekts: welche Fehlerklassen es gibt, wie sie fließen und wie Meldungen im Protokoll oder in der CLI ausgegeben werden. Grundlagen: ADR-0003 (Eingabegate) und ADR-0004 (zentrale Fehlertaxonomie).
+
+## 1. Fehlertaxonomie (drei Schichten)
+
+| Schicht | Klasse | Herkunft | Beispiel |
+|---|---|---|---|
+| **etiket** | `EtiketError` + Subklassen `InvalidInputError`, `CapacityError`, `CheckDigitError` | Barcode-Encoder lehnt Input ab oder überläuft Kapazität | Code mit Steuerzeichen, zu langer Code |
+| **Projekt** | `AppError` mit `ErrorCode` | Eigene Prüflogik (Dateien, Config, Bereiche, Vorlagen) | fehlende Vorlage, ungültiger Bereich, doppelte Einträge |
+| **Unbekannt** | beliebiges Geworfenes | Browser-/Node-Plumbing | `TypeError`, `Failed to fetch`, `ENOENT` |
+
+<Note>
+**Regel:** etiket wirft ausschließlich `EtiketError`-Subklassen (nie bare `Error`). Ein einziges `instanceof`-Prüfmuster genügt, um „Input abgelehnt" von „etwas anderes ging schief" zu trennen.
+</Note>
+
+### ErrorCode-Referenz (`AppError.code`)
+
+| Code | Bedeutung | Lösungshinweis (automatisch) |
+|---|---|---|
+| `ENTRIES_EMPTY` | Keine Lagerplätze eingegeben | — |
+| `ENTRIES_DUPLICATE` | Doppelter Eintrag | Doppelte entfernen |
+| `RANGE_INVALID` | Bereichs-Expansion fehlgeschlagen | Muster: gemeinsamer Präfix + gleich lange Ziffern |
+| `RANGE_TOO_LARGE` | Bereich überschreitet `MAX_RANGE_SIZE` | Bereich aufteilen |
+| `TEMPLATE_MISSING` | Keine Vorlage geladen | Galerie/Datei wählen |
+| `TEMPLATE_LOAD_FAILED` | Vorlagen-Datei kaputt/kein Bild | andere Datei wählen |
+| `TEMPLATE_NOT_PNG` | Nicht-PNG als Vorlage | PNG wählen |
+| `CONFIG_INVALID` | `config.json` unlesbar | JSON-Syntax prüfen |
+| `CONFIG_NOT_FOUND` | Config-Datei fehlt | Pfad prüfen |
+| `AREA_EXCEEDS_TEMPLATE` | Zielbereich außerhalb der Vorlage | Bereich verkleinern |
+| `RENDER_FAILED` | Rasterung fehlgeschlagen (nicht etiket-bedingt) | — |
+| `FILESYSTEM` | Datei-I/O-Fehler (CLI) | Pfad/Berechtigungen prüfen |
+| `NETWORK` | Fetch-Fehler (Browser) | Verbindung prüfen |
+| `UNKNOWN` | Restfall | — |
+
+## 2. Der Meldungs-Mapper `describeError()`
+
+**Eine Funktion für alle Ausgabestellen** (`packages/lager-etiket/src/errors.ts`):
+
+```ts
+describeError(err: unknown, context?: string): string
+```
+
+- `err instanceof EtiketError` → typisierte deutsche Erklärung (`describeEtiketError`) **mit** Originaltext in Klammern (genaue Diagnose)
+- `err instanceof AppError` → eigene Meldung + automatischer Lösungshinweis je Code
+- `Error` mit bekannten Texten (`Failed to fetch`, `ENOENT`, JSON-Fehler) → spezifische deutsche Kurzmeldung
+- alles andere → generisch mit Originaltext
+
+Rückgabe ist immer ein ein- bis zweizeiliger, nutzerfreundlicher String. Der Aufrufer muss die Fehlertaxonomie nicht kennen.
+
+## 3. Fehlerfluss (wo wird was gefangen)
+
+```
+etiket-Encoder
+   │  (InvalidInputError / CapacityError / CheckDigitError)
+   ▼
+renderBarcodeSvg()          [lib: renderers/svg.ts]
+   │  EtiketError transparent durchgereicht,
+   │  anderes → AppError(RENDER_FAILED)
+   ▼
+renderBarcodeImage()        [lib: encoders/code128.ts]
+   │  SVG-Ladefehler → AppError(RENDER_FAILED)
+   ▼
+composeLabel()              [lib: compose.ts]
+   │
+   ├─► Browser:  generator.ts / preview.ts
+   │      catch (err) → log.err(describeError(err, 'Fehler bei "01A01"'))
+   │      (Eingabegate validateEntry() fängt die meisten Fälle VOR dem Rendern —
+   │       ADR-0003; der Renderer-catch ist die letzte Verteidigungslinie)
+   │
+   └─► CLI:      @lager-etiket/cli (lager …)
+          Fehler werden an citty/runMain durchgereicht und dort gemeldet;
+          describeError steht bei Bedarf aus @lager-etiket/lib zur Verfügung
+          (kein Mapper-Fork mehr — siehe ADR-0005, Monorepo-Umstellung)
+```
+
+### Wichtige Design-Entscheidungen
+
+<Steps>
+  <Step title="Validierung vor dem Rendern (ADR-0003)">
+    Die Eingabegate (`validateEntry()`, UI + CLI) fangen ungültige Codes, bevor etiket sie sieht. Der etiket-catch im Renderer ist die zweite Verteidigungslinie, für Fälle, die das Gate durchlassen kann (Konfig-Fehler, Race-Conditions).
+  </Step>
+  <Step title="Typisierte Durchreichung">
+    `renderBarcodeSvg()` reicht `EtiketError` unverändert weiter (kein Wrapping), damit `instanceof`-Prüfungen oben funktionieren. Nur _fremde_ Fehler werden in `AppError(RENDER_FAILED)` gekapselt.
+  </Step>
+  <Step title="Mapper-Fork (historisch, aufgelöst)">
+    Seit der Monorepo-Migration (ADR-0005) importiert auch die CLI `describeError` direkt aus `@lager-etiket/lib`. Die frühere JS-Kopie aus der Barcode.mjs-Ära ist entfallen.
+  </Step>
+  <Step title="Originaltext bleibt erhalten">
+    Bei etiket-Fehlern hängt der englische Originaltext in Klammern an der deutschen Meldung. Wichtig für Bugreports.
+  </Step>
+</Steps>
+
+## 4. Neue Fehlerstellen ergänzen (Anleitung)
+
+<Steps>
+  <Step title="Neuer AppError-Code?">
+    In `packages/lager-etiket/src/errors.ts`:
+    - `ErrorCode`-Union erweitern,
+    - ggf. Konstruktor-Helper in `appErrors` ergänzen,
+    - Lösungshinweis in `hint()` eintragen (nur wenn ein Tipp sinnvoll ist).
+  </Step>
+  <Step title="Neue etiket-Fehlerklasse?">
+    (z. B. nach etiket-Upgrade) In `errors.ts` prüfen: `isEtiketError` arbeitet über `err.name`-Whitelist. Neue Klasse dort ergänzen, `describeEtiketError()` bekommt einen eigenen Zweig mit deutscher Erklärung.
+  </Step>
+  <Step title="Test schreiben">
+    `packages/lager-etiket/test/errors.test.ts`: Mapper ist pure Logik, DOM-frei testbar.
+  </Step>
+  <Step title="CLI-Pfad mitsynchronisieren">
+    In `@lager-etiket/cli` (`pnpm cli generate|validate|list`).
+  </Step>
+</Steps>

@@ -1,0 +1,78 @@
+---
+title: "Lokales Setup: Web-App und CLI selbst betreiben"
+sidebarTitle: "Lokales Setup"
+description: "Web-App per statischem Server lokal starten oder das Repository für Entwicklung klonen. Voraussetzungen für Node.js und pnpm."
+---
+
+Die Web-App läuft normalerweise auf [GitHub Pages](https://maxhambi.github.io/Lager-etiket/), komplett im Browser und ohne Installation. Diese Seite beschreibt, wie du sie **lokal** betreibst und was du für die **CLI** brauchst.
+
+## Variante 1: Live-Tool nutzen (ohne Installation)
+
+[GitHub Pages](https://maxhambi.github.io/Lager-etiket/) öffnen, Passwort eingeben, loslegen. Details: [Login und Passwortschutz](/login-und-passwortschutz).
+
+## Variante 2: Web-App lokal betreiben
+
+Da die App zu 100 % offline im Browser läuft, genügt ein einfacher statischer Server:
+
+<Steps>
+  <Step title="Repository klonen und Abhängigkeiten installieren">
+    ```bash
+    git clone https://github.com/MaxHambi/Lager-etiket.git
+    cd Lager-etiket
+    npm install -g pnpm    # falls pnpm fehlt
+    pnpm install
+    pnpm build
+    ```
+  </Step>
+  <Step title="Statischen Server starten">
+    ```bash
+    npx serve packages/web
+    # oder: python -m http.server 8080 --directory packages/web
+    ```
+  </Step>
+  <Step title="Im Browser öffnen">
+    `http://localhost:3000` (bzw. den Port des Servers).
+  </Step>
+</Steps>
+
+<Warning>
+  Die App muss über `http://…` geladen werden, nicht per `file://`. Sonst blockiert der Browser das Laden von Vorlagen und Konfigurationsdateien.
+</Warning>
+
+## Variante 3: Entwicklung
+
+Wer am Code arbeiten will:
+
+```bash
+pnpm install
+pnpm dev:web      # Web-App mit Watch-Build
+pnpm dev:cli      # CLI im Stub-Modus (Änderungen sofort ausführbar)
+pnpm test         # Testsuite
+pnpm build        # Produktions-Build aller Pakete
+```
+
+Benötigt wird **Node.js ≥ 24** und **pnpm**. Weitere Details für Beitragende: `CONTRIBUTING.md` im Repository.
+
+## CLI nutzen
+
+Für die Kommandozeilen-Erzeugung siehe [CLI](/cli). Die Installation aus Variante 2 deckt die CLI mit ab.
+
+## Nach dem Setup
+
+<CardGroup cols={2}>
+  <Card title="Schnellstart" icon="rocket" href="/quickstart">
+    Erste Schritte.
+  </Card>
+
+  <Card title="Vorlagen und Einträge" icon="image" href="/vorlagen-und-eintraege">
+    Eigene Vorlagen einbinden.
+  </Card>
+
+  <Card title="Konfiguration" icon="sliders" href="/konfiguration">
+    Einstellungen anpassen.
+  </Card>
+
+  <Card title="CLI" icon="terminal" href="/cli">
+    Schilder per Kommandozeile.
+  </Card>
+</CardGroup>
