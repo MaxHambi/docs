@@ -70,6 +70,46 @@
     ]
   },
   "styling": {
-    "codeblocks": "dark"
+    "codeblocks": {
+      "theme": {
+        "light": "catppuccin-latte",
+        "dark": "catppuccin-mocha"
+      }
+    },
+    "eyebrows": "section"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "background": {
+    "decoration": "windows"
+  },
+  "appearance": {
+    "default": "light"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Josefin Sans",
+      "weight": 700
+    },
+    "body": {
+      "family": "Source Sans Pro",
+      "weight": 500
+    }
+  },
+  "metadata": {
+    "timestamp": true
+  },
+  "contextual": {
+    "options": [
+      "download-pdf",
+      "copy",
+      "assistant",
+      "view"
+    ],
+    "display": "header"
+  },
+  "interaction": {
+    "drilldown": true
   }
 }
