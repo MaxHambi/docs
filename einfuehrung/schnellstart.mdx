@@ -1,0 +1,94 @@
+---
+title: "Schnellstart: Erstes Barcode-Schild in fünf Minuten"
+sidebarTitle: "Schnellstart"
+description: "Vom Öffnen der Web-App bis zum fertigen ZIP-Download: In fünf Schritten das erste Barcode-Schild erzeugen und druckfertig speichern."
+---
+
+Diese Anleitung führt dich in fünf Schritten vom ersten Aufruf der Web-App bis zum druckfertigen ZIP-Archiv. Du benötigst keine Vorkenntnisse — am Ende hältst du ein einsatzbereites Barcode-Schild in der Hand.
+
+<Steps>
+
+  <Step title="Starten und entsperren">
+    Öffne das Werkzeug im Browser. Du kannst entweder die gehostete Version auf GitHub Pages aufrufen (`https://maxhambi.github.io/Lager-etiket/`) oder die Anwendung lokal über einen Webserver starten.
+
+    1. Klicke den Begrüßungsbildschirm an, um ihn zu schließen.
+    2. Gib das Passwort ein und klicke auf **Entsperren**.
+
+    <Note>
+      Die Anwendung läuft vollständig offline. Eine Internetverbindung ist nur nötig, wenn du die GitHub-Pages-Version zum ersten Mal lädst — danach funktioniert alles lokal im Browser.
+    </Note>
+  </Step>
+
+  <Step title="Vorlage wählen">
+    In Karte **1 Vorlage** legst du das Aussehen deiner Schilder fest.
+
+    1. Klicke in der Vorlagen-Galerie auf eine Karte, um eine mitgelieferte Vorlage zu übernehmen.
+    2. Möchtest du eine eigene Vorlage nutzen, ziehe eine PNG-Datei auf die Dropzone — oder klicke die Dropzone an und wähle die Datei aus.
+    3. Unterhalb der Galerie erscheint eine Vorschau mit Name und Größe der gewählten Vorlage in Pixeln.
+
+    <Tip>
+      Die Web-App merkt sich die zuletzt verwendete Vorlage im Browser. Beim nächsten Öffnen ist sie automatisch vorausgewählt.
+    </Tip>
+  </Step>
+
+  <Step title="Lagerplätze angeben">
+    In Karte **2 Lagerplätze** trägst du ein, welche Schilder erzeugt werden sollen.
+
+    **Einzelner Lagerplatz** — ideal für einen schnellen Test:
+    - Tippe die Bezeichnung direkt ins Eingabefeld, z. B. `01A01`.
+
+    **Mehrere Bereiche** — für einen vollständigen Lauf:
+    1. Schalte in den Mehrbereichs-Modus um.
+    2. Klicke auf **+ Unterkategorie**, um einen Bereich hinzuzufügen.
+    3. Gib für jede Unterkategorie einen **Start**-Wert (z. B. `01A01`) und einen **End**-Wert (z. B. `01A12`) an und wähle die gewünschte Konfiguration im Dropdown.
+    4. Füge weitere Unterkategorien für zusätzliche Gänge oder Ebenen hinzu.
+
+    **Aus Datei laden:**
+    - Klicke auf **„.txt laden"**, um eine zeilenweise Liste von Lagerplätzen aus einer Textdatei zu importieren.
+
+    <Warning>
+      Doppelte Lagerplätze über mehrere Unterkategorien hinweg sind absichtlich verboten. Die Erzeugung bricht ab, sobald ein Duplikat erkannt wird — so wird verhindert, dass zwei Schilder denselben Barcode erhalten.
+    </Warning>
+  </Step>
+
+  <Step title="Vorschau prüfen">
+    Bevor du alle Schilder erzeugst, kontrollierst du in Karte **4 Vorschau**, ob Vorlage und Lagerplatz-Positionierung stimmen. Karte **3 Konfiguration** — für Ausgabegröße und Theme — ist für den Schnellstart optional und kann übersprungen werden.
+
+    1. Aktiviere optional **„Zielbereich einzeichnen"**, um die Platzierungszone sichtbar zu machen.
+    2. Klicke auf **„Vorschau erzeugen"**.
+    3. Prüfe: Liegt der Barcode mittig im Zielbereich? Überlappt nichts? Ist der Klartext unter dem Barcode gut lesbar?
+    4. Klicke auf das Vorschaubild, um es in der Großansicht zu öffnen.
+
+    <Tip>
+      Scanne den Barcode in der Vorschau mit einem echten Handscanner, bevor du einen großen Lauf startest. So erkennst du Größen- oder Positionierungsprobleme frühzeitig.
+    </Tip>
+  </Step>
+
+  <Step title="Erzeugen und herunterladen">
+    In Karte **5 Erzeugen** startest du die finale Produktion aller Schilder.
+
+    1. Klicke auf **„Alle Schilder erzeugen"**. Der Fortschrittsbalken zeigt dir, wie viele Schilder bereits fertig sind.
+    2. Nach Abschluss hast du zwei Download-Optionen:
+       - **„Alle als ZIP herunterladen"** in Karte 5 — lädt alle Schilder in einem Archiv.
+       - Einzelne Schilder über das **↓-Symbol** in Karte **6 Ergebnisse** herunterladen.
+    3. Entpacke das ZIP-Archiv und drucke die PNG-Dateien **in tatsächlicher Größe** — verwende niemals die Option „An Seite anpassen".
+
+    <Warning>
+      „An Seite anpassen" skaliert das Bild auf das Papierformat und verändert dabei die physische Barcode-Breite. Scanner können den Barcode dann möglicherweise nicht mehr lesen.
+    </Warning>
+  </Step>
+
+</Steps>
+
+## Nächste Schritte
+
+Du hast dein erstes Barcode-Schild erzeugt. Für größere Läufe und weiterführende Themen empfehlen sich diese Seiten:
+
+<CardGroup cols={2}>
+  <Card title="Vorlagen anpassen" icon="image" href="/web-app/vorlagen-und-eintraege">
+    Eigene PNG-Vorlagen erstellen und den Zielbereich für den Barcode festlegen.
+  </Card>
+  <Card title="CLI-Schnellreferenz" icon="terminal" href="/cli/uebersicht">
+    Alle Flags und Beispiele für automatisierte Batch-Läufe per `lager`-Befehl.
+  </Card>
+</CardGroup>

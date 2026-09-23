@@ -1,0 +1,128 @@
+---
+title: "Protokoll lesen und Fehler gezielt in der Web-App beheben"
+sidebarTitle: "Protokoll & Fehler"
+description: "Farbkodiertes Protokoll verstehen, häufige Fehlermeldungen mit Lösungen nachschlagen und die Checkliste vor einem großen Generierungslauf abarbeiten."
+---
+
+Die Web-App schreibt jeden Schritt eines Generierungslaufs in das Protokoll auf Karte **„7 Protokoll"**. Anhand der Farbe erkennst du auf einen Blick, ob alles glatt lief oder ob Einträge deine Aufmerksamkeit brauchen. Dieses Protokoll ist dein wichtigstes Werkzeug, wenn etwas nicht wie erwartet funktioniert — lies es von oben nach unten, bevor du irgendetwas anderes versuchst.
+
+## Protokoll lesen
+
+Jeder Eintrag trägt einen Zeitstempel und eine Farbe, die die Art der Meldung anzeigt:
+
+| Farbe | Bedeutung | Beispiel |
+|---|---|---|
+| Grau | Information — normaler Ablauf | „Werkzeug bereit…", „Erstelle ZIP-Archiv…" |
+| Grün | Erfolg — Datei wurde erstellt | „Erstellt: lagerplatz\_01A01.png" |
+| Gelb | Warnung — Lauf läuft weiter, aber prüfe diesen Eintrag | „Zielbereich … reicht über die Vorlagengröße … hinaus" |
+| Rot | Fehler — dieser Eintrag wurde übersprungen oder der Lauf wurde abgebrochen | „Doppelter Eintrag …", „Vorschau fehlgeschlagen: …" |
+
+<Tip>
+  Mit dem Button **„Protokoll speichern"** lädst du das gesamte Protokoll als `generator-protokoll.txt` herunter. Das ist besonders praktisch, wenn du einen Fehler jemandem weiterleiten oder später nachschlagen möchtest.
+</Tip>
+
+## Häufige Probleme und Lösungen
+
+Klappe die jeweilige Meldung auf, um Ursache und Lösung zu sehen.
+
+<AccordionGroup>
+
+  <Accordion title="Ungültige Lagerplatz-Codes gefunden (Unterkategorie N, Position M)">
+    **Ursache:** Mindestens ein Code in der angegebenen Unterkategorie entspricht nicht dem erwarteten Format.
+
+    **Lösung:** Suche den Eintrag im Protokoll anhand der genannten Unterkategorie und Position. Korrigiere den Code in der Eingabe und starte den Lauf erneut.
+  </Accordion>
+
+  <Accordion title="Doppelte Lagerplätze über Unterkategorien hinweg">
+    **Ursache:** Dieselbe Platznummer taucht in mehr als einer Unterkategorie auf. Jeder Lagerplatz muss eindeutig sein.
+
+    **Lösung:** Entferne das Duplikat aus einer der Unterkategorien und starte den Lauf erneut.
+  </Accordion>
+
+  <Accordion title="Zielbereich reicht über die Vorlagengröße hinaus (gelbe Warnung)">
+    **Ursache:** Der konfigurierte Zielbereich (Links, Oben, Breite, Höhe) passt nicht zur Größe der geladenen Vorlage. Der Barcode würde teilweise außerhalb des Bildes platziert.
+
+    **Lösung:** Wähle **Zielbereich automatisch**, damit die App den Bereich selbst berechnet — oder passe die Felder Links, Oben, Breite und Höhe manuell so an, dass der Bereich vollständig innerhalb der Vorlage liegt.
+  </Accordion>
+
+  <Accordion title="Bitte eine PNG-Bilddatei als Vorlage auswählen">
+    **Ursache:** Du hast eine Datei in die Dropzone gezogen, die kein PNG ist (z. B. JPG, PDF oder SVG).
+
+    **Lösung:** Verwende ausschließlich PNG-Dateien als Vorlage. Exportiere deine Vorlage bei Bedarf im PNG-Format neu.
+  </Accordion>
+
+  <Accordion title="Vorlage konnte nicht geladen werden">
+    **Ursache:** Die PNG-Datei ist beschädigt oder verwendet ein exotisches PNG-Profil, das der Browser nicht verarbeiten kann.
+
+    **Lösung:** Exportiere die Vorlagendatei neu aus deinem Bildbearbeitungsprogramm und lade sie erneut hoch.
+  </Accordion>
+
+  <Accordion title="Vorschau bleibt leer / Barcode fehlt im Vorschaubild">
+    **Ursache:** Der Zielbereich liegt vollständig außerhalb der Vorlage. Das passiert häufig, wenn du mit einem kleinen Testbild arbeitest, aber noch Koordinaten einer größeren Vorlage eingestellt sind.
+
+    **Lösung:** Setze Links und Oben auf `0` und passe Breite und Höhe an die tatsächliche Bildgröße an — oder wähle **Zielbereich automatisch**.
+  </Accordion>
+
+  <Accordion title="Falsches Passwort. Bitte erneut versuchen.">
+    **Ursache:** Das eingegebene Passwort ist falsch — entweder ein Tippfehler oder das Passwort wurde seit deiner letzten Sitzung geändert.
+
+    **Lösung:** Gib das Passwort erneut ein. Wenn das Passwort kürzlich vom Admin geändert wurde, schließe den Tab, öffne die Seite neu und verwende das aktuelle Passwort.
+  </Accordion>
+
+  <Accordion title="Barcode scannt schlecht oder gar nicht">
+    **Ursache:** Die Ruhezonen (leere Bereiche links und rechts des Barcodes) werden von der Vorlage überlagert, der Barcode ist zu klein gedruckt worden oder der Kontrast zwischen Barcode und Hintergrund ist zu gering.
+
+    **Lösung:** Drucke die Schilder in ihrer tatsächlichen Zielgröße — niemals „An Seite anpassen" verwenden. Stelle sicher, dass der Bereich hinter dem Barcode in der Vorlage frei (hell) ist. Teste den Scan unter realer Beleuchtung und mit dem tatsächlich verwendeten Scanner.
+  </Accordion>
+
+  <Accordion title="Einzelne Schilder fehlen im heruntergeladenen ZIP">
+    **Ursache:** Bei einem oder mehreren Einträgen ist ein Fehler aufgetreten (im Protokoll als roter Eintrag sichtbar). Diese Einträge wurden übersprungen und fehlen daher im ZIP.
+
+    **Lösung:** Öffne das Protokoll, suche die roten Einträge, korrigiere die betroffenen Lagerplätze und starte den Lauf erneut.
+  </Accordion>
+
+  <Accordion title="Zeichen an Position N ist kein ASCII">
+    **Ursache:** Ein Lagerplatz-Code enthält Umlaute (ä, ö, ü), Sonderzeichen oder andere Nicht-ASCII-Zeichen. Code-128 unterstützt ausschließlich ASCII.
+
+    **Lösung:** Verwende nur ASCII-Zeichen in deinen Codes: Großbuchstaben A–Z, Ziffern 0–9 und zulässige Sonderzeichen wie den Bindestrich.
+  </Accordion>
+
+  <Accordion title="Der Code passt nicht in die gewählte Symbologie (zu lang)">
+    **Ursache:** Der Barcode-Text ist zu lang für den konfigurierten Barcode-Bereich.
+
+    **Lösung:** Kürze den Code oder vergrößere den Barcode-Bereich in der Vorlagenkonfiguration (Breite und Höhe des Zielbereichs).
+  </Accordion>
+
+  <Accordion title="Die Prüfziffer stimmt nicht">
+    **Ursache:** Du hast manuell eine Prüfziffer an den Code angehängt. Code-128 berechnet die Prüfziffer automatisch — eine zusätzliche Ziffer am Ende verfälscht das Ergebnis.
+
+    **Lösung:** Entferne die letzte Ziffer aus dem Code. Die Prüfziffer wird vom Generator automatisch korrekt berechnet und angehängt.
+  </Accordion>
+
+</AccordionGroup>
+
+## Checkliste vor dem Großlauf
+
+Bevor du hunderte von Schildern erzeugst, lohnt sich ein kurzer Testlauf. Damit vermeidest du, einen kompletten Bestand neu drucken zu müssen, weil eine Kleinigkeit nicht gestimmt hat.
+
+<Steps>
+  <Step title="Testschilder erzeugen">
+    Erzeuge 2–3 Testschilder, darunter bewusst kurze UND lange Platznummern. So erkennst du Probleme mit Zielbereich und Schriftgröße bevor sie sich tausendfach wiederholen.
+  </Step>
+  <Step title="Dateiname, Klartext und Scan vergleichen">
+    Prüfe für jedes Testschild: Stimmt der Dateiname? Ist der sichtbare Text auf dem Schild korrekt? Ergibt der gescannte Barcode genau den erwarteten Code?
+  </Step>
+  <Step title="In tatsächlicher Größe drucken">
+    Drucke die Testschilder in der echten Zielgröße aus. Verwende niemals die Option „An Seite anpassen" — sie skaliert den Barcode und macht ihn unter Umständen unlesbar.
+  </Step>
+  <Step title="Unter realen Bedingungen testen">
+    Scanne die gedruckten Testschilder mit den tatsächlich verwendeten Scannern, unter der realen Beleuchtung im Lager und auf dem echten Trägermaterial (Papier, Folie, Aufkleber).
+  </Step>
+  <Step title="Vollständigen Bestand erzeugen">
+    Erst wenn alle Testschilder einwandfrei funktionieren, erzeuge den vollständigen Bestand.
+  </Step>
+</Steps>
+
+<Warning>
+  Überspringe den Testlauf nicht, auch wenn du die App schon kennst. Eine neue Vorlage, ein anderes Druckmaterial oder ein anderes Scanner-Modell kann das Ergebnis überraschend verändern.
+</Warning>

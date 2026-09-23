@@ -1,0 +1,78 @@
+{
+  "projectType": "frontend",
+  "projectName": "Lagerplatz-Barcode-Generator",
+  "projectDescription": "Ein Werkzeug zur Erzeugung von Code-128-Barcode-Schildern für Lagerplätze — als Web-App (komplett offline) und als CLI.",
+  "theme": "almond",
+  "primaryColor": "#3B82F6",
+  "lightColor": "#EFF6FF",
+  "darkColor": "#1E3A5F",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Benutzerhandbuch",
+        "groups": [
+          {
+            "group": "Einführung",
+            "pages": [
+              "einfuehrung/willkommen",
+              "einfuehrung/schnellstart"
+            ]
+          },
+          {
+            "group": "Web-App",
+            "pages": [
+              "web-app/vorlagen-und-eintraege",
+              "web-app/konfiguration",
+              "web-app/vorschau-und-erzeugung",
+              "web-app/login-und-passwortschutz",
+              "web-app/protokoll-und-fehlerbehebung"
+            ]
+          },
+          {
+            "group": "CLI",
+            "pages": [
+              "cli/uebersicht",
+              "cli/befehle"
+            ]
+          },
+          {
+            "group": "Installation & Betrieb",
+            "pages": [
+              "betrieb/lokales-setup",
+              "betrieb/konfigurationsdatei"
+            ]
+          },
+          {
+            "group": "Hilfe",
+            "pages": [
+              "hilfe/faq",
+              "hilfe/fehlermeldungen"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Code-128-Barcode-Erzeugung auf PNG-Vorlagen",
+    "Web-App läuft 100 % offline im Browser",
+    "CLI für Automatisierung und Batch-Läufe",
+    "Unterkategorien für mehrere Lagerplatz-Bereiche",
+    "Schutz vor doppelten Barcodes durch automatische Duplikatprüfung",
+    "ZIP-Download aller erzeugten Schilder",
+    "Einzel-Vorschau mit Zielbereich-Overlay",
+    "config.json Import/Export zwischen Web-App und CLI",
+    "Vier Catppuccin-Themes (drei dunkel, ein hell)",
+    "Clientseitige AES-256-GCM-Verschlüsselung (Passwortschutz)"
+  ],
+  "publicApiSurface": [
+    "lager generate <entry> --out <ordner>",
+    "lager generate --start <code> --end <code> --out <ordner>",
+    "lager generate --file <liste.txt> --out <ordner>",
+    "lager validate <entry>",
+    "lager validate --file <liste.txt>",
+    "lager list",
+    "--config <pfad>",
+    "--template <pfad>"
+  ]
+}

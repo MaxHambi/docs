@@ -1,0 +1,70 @@
+---
+title: "Lagerplatz-Barcode-Generator: Barcode-Schilder erzeugen"
+sidebarTitle: "Willkommen"
+description: "Code-128-Barcode-Schilder als PNG für Lagerplätze erzeugen — vollständig offline, als Web-App im Browser oder automatisiert per CLI-Befehl `lager`."
+---
+
+Der Lagerplatz-Barcode-Generator wandelt Lagerplatz-Bezeichnungen wie `01A01` in druckfertige Code-128-Barcode-Schilder im PNG-Format um. Du kannst einzelne Schilder für schnelle Tests ebenso erzeugen wie ganze Bereiche für eine vollständige Lagereinrichtung — alles läuft komplett offline, ohne Internetverbindung.
+
+## Zwei Wege zum fertigen Schild
+
+Beide Wege erzeugen pixelidentische Ergebnisse — ein Lagerplatz sieht in der Web-App genauso aus wie aus der CLI. Du kannst also jederzeit zwischen beiden wechseln.
+
+<CardGroup cols={2}>
+  <Card title="Web-App" icon="browser">
+    **Ideal für:** tägliche Arbeit im Lager
+
+    - Im Browser öffnen (GitHub Pages oder lokal)
+    - Vorlage aus der Galerie wählen oder eigene PNG laden
+    - Lagerplätze per Formular oder `.txt`-Liste eingeben
+    - Vorschau prüfen, dann als ZIP herunterladen
+  </Card>
+  <Card title="CLI" icon="terminal">
+    **Ideal für:** Automatisierung und Batch-Skripte
+
+    - Befehl: `lager generate --start 01A01 --end 01A12 --out output`
+    - Lagerplätze als Argumente oder `.txt`-Liste übergeben
+    - PNG-Dateien landen direkt in einem Ausgabeordner
+  </Card>
+</CardGroup>
+
+## Der kürzeste Weg
+
+Das Wichtigste in einem Satz: **Vorlage laden → Lagerplätze eintragen → Vorschau prüfen → „Alle Schilder erzeugen" → als ZIP herunterladen und drucken.**
+
+## Wichtige Regeln
+
+Beachte diese Punkte, bevor du mit einem größeren Lauf beginnst:
+
+<Warning>
+  Drucke Schilder immer **in tatsächlicher Größe** — niemals die Option „An Seite anpassen" verwenden. Falsche Skalierung macht den Barcode für Scanner unlesbar.
+</Warning>
+
+<Warning>
+  Doppelte Lagerplatz-Einträge brechen die Erzeugung bewusst ab. So wird sichergestellt, dass nie zwei Schilder mit demselben Barcode entstehen.
+</Warning>
+
+<Tip>
+  Führe vor großen Läufen immer erst 2–3 Testschilder durch und prüfe sie mit einem echten Scanner. So erkennst du Konfigurationsfehler, bevor du hunderte Schilder druckst.
+</Tip>
+
+<Note>
+  Das Tool läuft komplett offline — eine Internetverbindung ist weder für die Web-App (lokal gestartet) noch für die CLI erforderlich. Die Web-App merkt sich außerdem dein gewähltes Theme, den Overlay-Modus und die zuletzt verwendete Vorlage im Browser.
+</Note>
+
+## Nächste Schritte
+
+<CardGroup cols={2}>
+  <Card title="Schnellstart" icon="rocket" href="/einfuehrung/schnellstart">
+    Vom Öffnen der Web-App bis zum fertigen ZIP in fünf kurzen Schritten.
+  </Card>
+  <Card title="Web-App verwenden" icon="browser" href="/web-app/vorlagen-und-eintraege">
+    Alle Karten und Einstellungen der Web-App im Detail erklärt.
+  </Card>
+  <Card title="CLI verwenden" icon="terminal" href="/cli/uebersicht">
+    Befehle, Flags und Beispiele für die Kommandozeile.
+  </Card>
+  <Card title="Konfiguration" icon="sliders" href="/web-app/konfiguration">
+    Ausgabegröße, Overlay-Modus und Theme für deine Schilder einstellen.
+  </Card>
+</CardGroup>

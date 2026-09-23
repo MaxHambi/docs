@@ -1,0 +1,141 @@
+---
+title: "CLI-Befehlsreferenz für generate, validate und list"
+sidebarTitle: "Befehle"
+description: "Vollständige Referenz aller `lager`-Befehle: Schilder erzeugen mit `generate`, Codes prüfen mit `validate`, Formate anzeigen mit `list`."
+---
+
+Alle drei Befehle der `lager`-CLI werden hier mit ihren Optionen, Beispielen und der erwarteten Ausgabe beschrieben. Wenn du noch keine CLI eingerichtet hast, lies zuerst die [CLI-Übersicht](/cli/uebersicht), um die Voraussetzungen und Installation zu erfahren.
+
+---
+
+## `lager generate` — Schilder erzeugen {#lager-generate}
+
+Mit `generate` erzeugst du Barcode-Schilder als PNG-Dateien. Du kannst einen einzelnen Lagerplatz-Code angeben, einen zusammenhängenden Bereich definieren oder eine Liste aus einer Textdatei einlesen. Alle drei Varianten schreiben ihre Ergebnisse in den mit `--out` angegebenen Ordner.
+
+### Optionen
+
+| Option | Pflicht | Beschreibung |
+|---|---|---|
+| `entry` (positionell) | eine Quelle erforderlich | Einzelner Lagerplatz-Code, z. B. `01A01` |
+| `--start` / `--end` | eine Quelle erforderlich | Bereich von Code zu Code, z. B. `01A01` bis `01A12` — Präfix-Länge muss übereinstimmen |
+| `--file` | eine Quelle erforderlich | Pfad zu einer `.txt`-Eintragsliste (eine Zeile pro Code; Zeilen mit `#` werden übersprungen) |
+| `--config` | nein | Pfad zu einer `config.json`; ohne Angabe wird die Standard-Konfiguration verwendet |
+| `--template` | nein | Pfad zu einer Vorlagen-PNG, die als Hintergrund dient |
+| `--out` | ja | Ausgabeordner für die erzeugten PNG-Dateien (Standard: `output`) |
+
+<Note>
+  Von den drei Eingabequellen (`entry`, `--start`/`--end`, `--file`) muss
+  genau eine angegeben werden. Sie lassen sich nicht kombinieren.
+</Note>
+
+### Beispiele
+
+<CodeGroup>
+
+```shell Einzelner Lagerplatz
+node packages/cli/dist/cli.mjs generate 01A01 --out output
+```
+
+```shell Bereich von bis
+node packages/cli/dist/cli.mjs generate --start 01A01 --end 01A12 --out output
+```
+
+```shell Liste aus Datei
+node packages/cli/dist/cli.mjs generate --file liste.txt --out output
+```
+
+```shell Mit eigener Konfiguration
+node packages/cli/dist/cli.mjs generate --file liste.txt --config meine-config.json --out output
+```
+
+</CodeGroup>
+
+### Ausgabe
+
+Für jede erzeugte Datei gibt die CLI eine Zeile mit Dateiname und Größe aus. Am Ende erscheint eine Zusammenfassung:
+
+```
+output/01A01.png  (12,4 kB)
+output/01A02.png  (12,4 kB)
+...
+Fertig. 12 von 12 Schildern in output
+```
+
+<Warning>
+  Codes mit ungültigen Zeichen (z. B. Umlauten) werden vor dem Rendern
+  abgelehnt. Der Befehl bricht in diesem Fall mit Exit-Code 1 ab, ohne
+  teilweise Schilder zu schreiben. Nutze `node packages/cli/dist/cli.mjs validate`
+  vorab, um solche Einträge frühzeitig zu erkennen.
+</Warning>
+
+---
+
+## `lager validate` — Codes prüfen {#lager-validate}
+
+Mit `validate` prüfst du Lagerplatz-Codes auf Code-128-Kodierbarkeit und Duplikate — ohne dass dabei PNG-Dateien erzeugt werden. Das ist besonders praktisch vor einem großen `generate`-Lauf: Probleme werden schnell gefunden, ohne Zeit mit dem Rendern zu verschwenden.
+
+### Beispiele
+
+<CodeGroup>
+
+```shell Einzelnen Code prüfen
+node packages/cli/dist/cli.mjs validate 01A01
+```
+
+```shell Liste aus Datei prüfen
+node packages/cli/dist/cli.mjs validate --file liste.txt
+```
+
+</CodeGroup>
+
+### Ausgabe
+
+Jede geprüfte Zeile erzeugt eine Ausgabe der Form `OK <Code>` oder `INVALID <Code> — <Ursache>`:
+
+```
+OK 01A01
+OK 01A02
+INVALID 01Ä03 — Zeichen an Position 3 nicht kodierbar
+OK 01A04
+...
+Zusammenfassung: 3 gültig, 1 ungültig
+```
+
+<Note>
+  Der Exit-Code ist **0**, wenn alle Codes gültig sind, und **1**, wenn
+  mindestens ein ungültiger Code gefunden wurde. Nutze das in Skripten,
+  um den nachfolgenden `generate`-Schritt bedingt auszuführen:
+
+  ```shell
+  node packages/cli/dist/cli.mjs validate --file liste.txt && \
+  node packages/cli/dist/cli.mjs generate --file liste.txt --out output
+  ```
+</Note>
+
+---
+
+## `lager list` — Formate anzeigen {#lager-list}
+
+Mit `list` erhältst du einen Überblick über die unterstützten Symbologien und siehst, welche Konfigurationsquelle die CLI aktuell verwendet — die integrierte Standard-Konfiguration oder eine benutzerdefinierte Datei.
+
+### Beispiel
+
+```shell
+node packages/cli/dist/cli.mjs list
+```
+
+### Ausgabe
+
+```
+Unterstützte Symbologien:
+  • Code 128
+
+Aktive Konfiguration: Standard-Config (integriert)
+```
+
+<Tip>
+  Wenn du mit `--config` eine eigene Konfigurationsdatei übergibst, zeigt
+  `node packages/cli/dist/cli.mjs list` deren Pfad an — praktisch, um zu
+  prüfen, ob die richtige Konfiguration geladen ist, bevor du einen
+  Batch-Lauf startest.
+</Tip>

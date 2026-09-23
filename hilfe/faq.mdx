@@ -1,0 +1,77 @@
+---
+title: "Häufige Fragen: Codes, Vorlagen, Druck und Passwort"
+sidebarTitle: "FAQ"
+description: "Antworten auf häufige Fragen zu Codes, Vorlagen, Druck, Passwortschutz und Browser-Einstellungen für den Lagerplatz-Barcode-Generator."
+---
+
+Hier findest du Antworten auf die häufigsten Fragen rund um die Web-App und die CLI des Lagerplatz-Barcode-Generators. Die Fragen sind nach Themenbereich gruppiert — klicke auf eine Frage, um die Antwort einzublenden.
+
+## Codes und Einträge
+
+<Accordion title="Welche Zeichen darf ein Lagerplatz-Code enthalten?">
+Ein Lagerplatz-Code darf ausschließlich druckbare ASCII-Zeichen enthalten: Buchstaben (A–Z, a–z), Ziffern (0–9) sowie die Sonderzeichen `-`, `.`, `$`, `+`, `%` und Leerzeichen. Umlaute (Ä, Ö, Ü, ß) und Emojis werden vom Generator abgelehnt. Der Grund: Die verwendete Bibliothek würde diese Zeichen zwar als Text auf das Schild drucken, sie aber nicht korrekt in den Barcode kodieren — der gedruckte Barcode wäre beim Scannen fehlerhaft oder würde gar nicht gelesen.
+</Accordion>
+
+<Accordion title="Wie lang darf ein Code sein?">
+Ein Lagerplatz-Code darf maximal **48 Zeichen** lang sein. Wenn ein Code sich dieser Grenze nähert, skaliert der Barcode automatisch auf den konfigurierten Zielbereich — die Balken werden schmaler und der gesamte Barcode kleiner. Achte bei sehr langen Codes darauf, dass dein Scanner noch in der Lage ist, die reduzierten Balkenbreiten zuverlässig zu lesen.
+</Accordion>
+
+<Accordion title="Warum bricht die Erzeugung bei doppelten Einträgen ab?">
+Das ist ein bewusstes Sicherheitsmerkmal. Zwei Schilder mit identischem Barcode im Umlauf führen zwangsläufig zu Verwirrung und Fehlbuchungen im Lager. Die Duplikat-Prüfung läuft über alle Unterkategorien hinweg — ein Code darf also auch kategorieübergreifend nur einmal vorkommen. Die Fehlermeldung nennt dir den doppelten Code sowie alle beteiligten Unterkategorien. In der CLI (bei Verwendung von `--file`) werden zusätzlich die genauen Zeilennummern der `.txt`-Datei angegeben, damit du den Eintrag schnell findest und korrigieren kannst.
+</Accordion>
+
+<Accordion title="Was macht `validate` anders als `generate`?">
+Der Befehl `validate` (nur in der CLI verfügbar) prüft alle Codes auf Gültigkeit — Zeichensatz, Länge, Duplikate — ohne dabei auch nur eine einzige PNG-Datei zu rendern. Das macht ihn deutlich schneller als `generate` und ideal als Vorab-Prüfung vor einem großen Erzeugungslauf. Verwende `validate`, wenn du sicherstellen möchtest, dass deine Eingabedaten fehlerfrei sind, bevor du Rechenzeit in die Bildgenerierung investierst. `generate` führt dieselbe Prüfung durch und erzeugt anschließend die PNGs.
+</Accordion>
+
+## Vorlagen
+
+<Accordion title="Kann ich eigene Vorlagen verwenden?">
+Ja. In der Web-App lädst du deine eigene PNG-Vorlage über die Dropzone — entweder per Klick auf den Bereich oder per Drag & Drop. In der CLI übergibst du den Pfad zur Vorlage mit dem Parameter `--template`. Wichtig: Der Barcode wird innerhalb des konfigurierten Zielbereichs auf der Vorlage platziert. Deine Vorlage muss daher zu den eingestellten Zielbereich-Koordinaten passen — prüfe den Zielbereich im Overlay, bevor du einen ganzen Satz Schilder erzeugst.
+</Accordion>
+
+<Accordion title="Woher weiß ich, wohin der Barcode auf der Vorlage gedruckt wird?">
+In der Web-App kannst du den Zielbereich-Overlay einblenden: Aktiviere die Checkbox **„Zielbereich anzeigen"** in der Einstellungsleiste. Daraufhin erscheint eine gestrichelte Umrandung direkt auf der Vorschau der Vorlage, die Position (links, oben) sowie Breite und Höhe des Barcode-Bereichs anzeigt. So siehst du sofort, ob der Zielbereich korrekt gesetzt ist, bevor du mit der Erzeugung beginnst.
+</Accordion>
+
+<Accordion title="Wie groß dürfen Vorlagen sein?">
+Es gibt keine harte Größenbegrenzung für Vorlagen. Die mitgelieferten Standardvorlagen haben eine Auflösung von **2244 × 709 Pixeln**. Als Faustregel gilt: Die Vorlage sollte in natürlicher Größe (100 %, ohne Skalierung) genau der gewünschten physischen Schildgröße entsprechen, damit die Druckergebnisse maßhaltig sind. Sehr große Vorlagen erhöhen die Renderzeit und die Dateigröße der erzeugten PNGs.
+</Accordion>
+
+## Erzeugung und Druck
+
+<Accordion title="Warum ist der Barcode in der Vorschau verpixelt, im Druck aber scharf?">
+Die Vorschau in der Web-App ist eine verkleinerte Bildschirmdarstellung mit reduzierter Auflösung — das sieht unscharf aus, ist aber kein Fehler. Die tatsächlich erzeugten PNG-Dateien werden mit vollem DPI-Wert (Standard: 600 DPI) gerastert. Dabei wird der Barcode zunächst vektorbasiert skaliert und erst danach in Pixel umgewandelt — das Ergebnis ist daher immer scharf, unabhängig von der Vorschauqualität.
+</Accordion>
+
+<Accordion title="Wie drucke ich die Schilder korrekt?">
+Drucke das PNG immer in **tatsächlicher Größe** (100 % — je nach Druckdialog „Tatsächliche Größe" oder „Actual size"). Wähle **nicht** die Option „An Seite anpassen" oder „Skalieren". Andernfalls verändert der Drucker das Verhältnis der Balkenbreiten im Barcode, und viele Scanner können den Barcode dann nicht mehr zuverlässig lesen.
+</Accordion>
+
+<Accordion title="Kann ich mehrere Schilder auf einmal erzeugen?">
+Ja. In der Web-App kannst du mehrere Bereiche mit Unterkategorien anlegen; jede Unterkategorie hat einen eigenen Start- und Endwert, aus dem die Codes automatisch generiert werden. In der CLI stehen dir dafür die Parameter `--start` / `--end` (für einen fortlaufenden Bereich) oder `--file` (für eine `.txt`-Datei mit beliebigen Codes, einem pro Zeile) zur Verfügung.
+</Accordion>
+
+## Passwort und Datenschutz
+
+<Accordion title="Warum fragt die Live-App nach einem Passwort?">
+Der Lagerplatz-Barcode-Generator ist ein internes Werkzeug für Auto-Kabel Rülzheim. Der passwortgeschützte Build verschlüsselt die App-Logik und die enthaltenen Firmenvorlagen, damit nicht beliebige Dritte Schilder im Firmendesign erzeugen können. Der Passwortschutz gilt nur für den öffentlich erreichbaren Live-Build — eine selbst gehostete oder lokal laufende Instanz kann ohne Passwort betrieben werden.
+</Accordion>
+
+<Accordion title="Werden meine Daten an einen Server gesendet?">
+Nein. Die App läuft vollständig **offline im Browser**: Vorlagen, eingegebene Codes und erzeugte Bilder verlassen deinen Browser zu keinem Zeitpunkt. Nach dem Entsperren per Passwort wird die Sitzung im `sessionStorage` des Browsers gehalten — schließt du den Tab oder das Browserfenster, ist die Sitzung beendet und alle Daten sind weg.
+</Accordion>
+
+## Bedienung und Einstellungen
+
+<Accordion title="Warum ist meine letzte Vorlage beim nächsten Start noch ausgewählt?">
+Das ist gewollt. Der Generator speichert folgende Einstellungen im `localStorage` deines Browsers, damit du sie nicht bei jedem Start neu vornehmen musst: das gewählte Farbtheme, den Zustand der Zielbereich-Overlay-Checkbox und die zuletzt verwendete Vorlage. Diese Daten bleiben erhalten, bis du den Browser-Cache löschst oder die Einstellungen manuell zurücksetzt.
+</Accordion>
+
+<Accordion title="Wo finde ich die Themes, und welche gibt es?">
+Die Theme-Auswahl befindet sich im **Kopfbereich der Web-App**. Es stehen vier Farbschemata zur Verfügung: **Catppuccin Mocha**, **Macchiato** und **Frappé** (alle drei dunkel) sowie **Latte** (hell). Die gewählte Einstellung wird im `localStorage` gespeichert. Wenn du noch keine Auswahl getroffen hast, richtet sich die App automatisch nach der Systemeinstellung deines Betriebssystems (hell oder dunkel).
+</Accordion>
+
+<Accordion title="Gibt es den Generator auch ohne Browser?">
+Ja. Der Lagerplatz-Barcode-Generator steht als **CLI** (Kommandozeilenprogramm) für Windows, Linux und macOS zur Verfügung. Die CLI bietet denselben Funktionsumfang wie die Web-App, ist aber besonders für automatisierte Läufe und die Verarbeitung großer Mengen geeignet. Weitere Informationen findest du in der CLI-Sektion der Dokumentation.
+</Accordion>
