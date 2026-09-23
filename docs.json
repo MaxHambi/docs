@@ -68,5 +68,8 @@
         ]
       }
     ]
+  },
+  "styling": {
+    "codeblocks": "dark"
   }
 }
