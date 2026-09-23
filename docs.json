@@ -42,29 +42,16 @@
               "protokoll-und-fehlerbehebung",
               "faq"
             ]
-          },
-          {
-            "group": "Entwicklung",
-            "pages": [
-              "entwicklung/architektur",
-              "entwicklung/api-referenz",
-              "entwicklung/error-handling",
-              "entwicklung/roadmap"
-            ]
           }
         ]
       },
       {
         "tab": "Entwickler-Referenz",
-        "groups": [
-          {
-            "group": "Referenz",
-            "pages": [
-              "api-reference",
-              "error-handling",
-              "roadmap"
-            ]
-          }
+        "pages": [
+          "api-reference",
+          "error-handling",
+          "roadmap",
+          "entwicklung/architektur"
         ]
       }
     ]
